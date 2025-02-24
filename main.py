@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 import random
 import string
 
@@ -16,7 +16,7 @@ def get_db():
         db.close()
 
 class URLIn(BaseModel):
-    original_url: str
+    original_url: HttpUrl
 
 @app.get("/")
 def home():
@@ -24,10 +24,15 @@ def home():
 
 @app.post("/shorten/")
 def shorten_url(url_in: URLIn, db: Session = Depends(get_db)):
-    short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    while True:
+        short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        if not db.query(URLModel).filter(URLModel.short_code == short_code).first():
+            break
+
     db_url = URLModel(short_code = short_code, original_url = url_in.original_url)
     db.add(db_url)
     db.commit()
+    db.refresh(db_url)
     return {'shortened_url': f"http://localhost:8000/{short_code}"}
 
 @app.get("/{short_code}")
