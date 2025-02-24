@@ -1,10 +1,14 @@
 from sqlalchemy import create_engine, Column, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
 
-DATABASE_URL = "postgresql://neondb_owner:npg_tWemv6bUJI0l@ep-polished-sun-a9ovl1x6-pooler.gwc.azure.neon.tech/neondb?sslmode=require"
+load_dotenv()
 
-engine = create_engine(DATABASE_URL)
+DATABASE_URI = os.getenv("DATABASE_URI")
+
+engine = create_engine(DATABASE_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
