@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, HttpUrl
 import random
 import string
+import pkg_resources
 
 from database import SessionLocal, URLModel
 
