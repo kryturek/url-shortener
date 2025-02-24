@@ -6,7 +6,7 @@ import string
 
 from database import SessionLocal, URLModel
 
-app = FastAPI()
+app = FastAPI(root_path="/")
 
 def get_db():
     db = SessionLocal()
