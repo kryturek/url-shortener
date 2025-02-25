@@ -21,8 +21,7 @@ class URLIn(BaseModel):
 
 @app.get("/")
 def home():
-    installed_packages = {pkg.key: pkg.version for pkg in pkg_resources.working_set}
-    return {"Installed Packages": installed_packages}
+    return {'hello': 'world'}
 
 @app.post("/shorten/")
 def shorten_url(url_in: URLIn, db: Session = Depends(get_db)):
