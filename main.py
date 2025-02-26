@@ -29,7 +29,7 @@ def shorten_url(url_in: URLIn, db: Session = Depends(get_db)):
         if not db.query(URLModel).filter(URLModel.short_code == short_code).first():
             break
 
-    db_url = URLModel(short_code = short_code, original_url = url_in.original_url)
+    db_url = URLModel(short_code = short_code, original_url = str(url_in.original_url))
     db.add(db_url)
     db.commit()
     db.refresh(db_url)
