@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, HttpUrl
+from starlette.responses import RedirectResponse
 import random
 import string
 
@@ -40,4 +41,4 @@ def redirect_url(short_code: str, db: Session = Depends(get_db)):
     db_url = db.query(URLModel).filter(URLModel.short_code == short_code).first()
     if not db_url:
         raise HTTPException(status_code=404, detail="URL not found")
-    return {"redirect_url": db_url.original_url}
+    return RedirectResponse(url=db_url.original_url)
