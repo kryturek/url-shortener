@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, HttpUrl
 from starlette.responses import RedirectResponse
@@ -24,7 +24,7 @@ def home():
     return {'hello': 'world'}
 
 @app.post("/shorten/")
-def shorten_url(url_in: URLIn, db: Session = Depends(get_db)):
+def shorten_url(url_in: URLIn, request: Request, db: Session = Depends(get_db)):
     while True:
         short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
         if not db.query(URLModel).filter(URLModel.short_code == short_code).first():
@@ -34,7 +34,8 @@ def shorten_url(url_in: URLIn, db: Session = Depends(get_db)):
     db.add(db_url)
     db.commit()
     db.refresh(db_url)
-    return {'shortened_url': f"http://localhost:8000/{short_code}"}
+    base_url = str(request.base_url)
+    return {'shortened_url': f"{base_url}{short_code}"}
 
 @app.get("/{short_code}")
 def redirect_url(short_code: str, db: Session = Depends(get_db)):
