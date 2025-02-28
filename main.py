@@ -2,12 +2,21 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, HttpUrl
 from starlette.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 import random
 import string
 
 from database import SessionLocal, URLModel
 
 app = FastAPI(root_path="/")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_db():
     db = SessionLocal()
