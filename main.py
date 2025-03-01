@@ -12,10 +12,10 @@ app = FastAPI(root_path="/")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://url-shortener-gmf0.onrender.com/"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type"],
 )
 
 def get_db():
@@ -32,7 +32,8 @@ class URLIn(BaseModel):
 def home():
     return {'hello': 'world'}
 
-@app.post("/shorten/")
+@app.post("/shorten/", include_in_schema=False)
+@app.post("/shorten")
 def shorten_url(url_in: URLIn, request: Request, db: Session = Depends(get_db)):
     while True:
         short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
