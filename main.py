@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, HttpUrl
 from starlette.responses import RedirectResponse
@@ -10,12 +12,14 @@ from database import SessionLocal, URLModel
 
 app = FastAPI(root_path="/")
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://url-shortener-gmf0.onrender.com/"],
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def get_db():
@@ -29,8 +33,8 @@ class URLIn(BaseModel):
     original_url: HttpUrl
 
 @app.get("/")
-def home():
-    return {'hello': 'world'}
+def serve_frontend():
+    return FileResponse("static/index.html")
 
 @app.post("/shorten/", include_in_schema=False)
 @app.post("/shorten")
